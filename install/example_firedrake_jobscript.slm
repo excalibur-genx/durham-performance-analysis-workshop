@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH -p bluefield1
+#SBATCH -A do008
+#SBATCH -J firedrake
+#SBATCH -N 1
+#SBATCH -t 0:10:00
+
+# The script you want to run
+myScript=script.py
+# The number of nodes and total number of processors to use
+nodes=1
+nprocs=32
+
+# The following lines should not require modification #######
+
+# Activate Firedrake venv (activate once on mom node, extract once per node)
+source $DATA/bin/firedrake_activate.sh
+srun -n ${nodes} --ntasks-per-node 1 $DATA/bin/firedrake_activate.sh
+
+# Run Firedrake script
+srun -n ${nprocs} python ${myScript}
+
+# Update tarball with compiled code cache
+srun -n 1 $DATA/bin/update_firedrake_cache.sh
