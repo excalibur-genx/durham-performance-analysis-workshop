@@ -13,12 +13,13 @@ nprocs=32
 
 # The following lines should not require modification #######
 
-# Activate Firedrake venv (activate once on mom node, extract once per node)
+# Activate Firedrake venv (activate once on first node, extract once per node)
+export DATA=/cosma5/data/do008/dc-bett2
 source $DATA/bin/firedrake_activate.sh
 srun -n ${nodes} --ntasks-per-node 1 $DATA/bin/firedrake_activate.sh
 
 # Run Firedrake script
-srun -n ${nprocs} python ${myScript}
+mpiexec -n ${nprocs} $VIRTUAL_ENV/bin/python ${myScript}
 
 # Update tarball with compiled code cache
-srun -n 1 $DATA/bin/update_firedrake_cache.sh
+$DATA/bin/update_firedrake_cache.sh
