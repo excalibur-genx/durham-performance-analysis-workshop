@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -p bluefield1
-#SBATCH -A do008
+#SBATCH -A durham
 #SBATCH -J firedrake
 #SBATCH -N 1
 #SBATCH -t 0:10:00 # Overwrite last 3 using sbatch at submit time
@@ -11,18 +11,19 @@
 # RESULTS_DIR - Directory to save results to
 # SOLVER_PARAMS - Name of solver parameter dict (escaped in "")
 
+export DATA=/cosma5/data/do008/dc-bett2
 source $DATA/bin/firedrake_activate.sh
-srun -n ${NODES} --ntasks-per-node=1 $DATA/bin/firedrake_activate.sh
+srun -n ${NODES} --ntasks-per-node 1 $DATA/bin/firedrake_activate.sh
 
 export CPU_PER_NODE=32
 export NCPU=$(python -c "print(int(${NODES}*${CPU_PER_NODE}/${SPACING}))")
 export NPERNODE=$(python -c "print(int(${CPU_PER_NODE}/${SPACING}))")
-export TSFACTOR=$(python -c "print(int(${NODES}/2 if ${NODES}>1 else 1))")
-export COMM="srun -n ${NCPU} --ntasks-per-node ${NPERNODE} --cpus-per-task= ${SPACING} python \
-                poisson/poisson_gmg.py --resultsdir ${RESULTS_DIR} \
-                    --baseN 16 --nref 3 --solver_params \"${SOLVER_PARAMS}\" \
+export TSFACTOR=$(python -c "print(int(${NODES}))")
+export COMM="mpiexec -n ${NCPU} --ppn ${NPERNODE} $VIRTUAL_ENV/bin/python \
+                poisson_gmg.py --resultsdir ${RESULTS_DIR} \
+                    --baseN 12 --nref 3 --solver_params \"${SOLVER_PARAMS}\" \
                     --telescope_factor ${TSFACTOR} \
                     -log_view :${RESULTS_DIR}/${NCPU}_logview.py:ascii_info_detail"
 echo $COMM > ${RESULTS_DIR}/${NODES}_${NCPU}_srun.txt
 eval $COMM
-srun -n 1 $DATA/bin/update_firedrake_cache.sh
+$DATA/bin/update_firedrake_cache.sh
