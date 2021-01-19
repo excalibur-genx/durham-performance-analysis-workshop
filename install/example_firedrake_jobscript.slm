@@ -5,6 +5,8 @@
 #SBATCH -N 1
 #SBATCH -t 0:10:00
 
+# Explicit and absolute location of _your_ data folder
+export DATA=/cosma5/data/do008/dc-bett2
 # The script you want to run
 myScript=script.py
 # The number of nodes and total number of processors to use
@@ -14,7 +16,6 @@ nprocs=32
 # The following lines should not require modification #######
 
 # Activate Firedrake venv (activate once on first node, extract once per node)
-export DATA=/cosma5/data/do008/dc-bett2
 source $DATA/bin/firedrake_activate.sh
 srun -n ${nodes} --ntasks-per-node 1 $DATA/bin/firedrake_activate.sh
 
