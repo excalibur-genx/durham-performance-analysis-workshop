@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -p bluefield1
-#SBATCH -A durham
+#SBATCH -A do008
 #SBATCH -J firedrake
 #SBATCH -N 1
 #SBATCH -t 0:10:00 # Overwrite last 3 using sbatch at submit time
