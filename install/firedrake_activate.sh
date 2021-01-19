@@ -8,11 +8,11 @@ module load cmake/3.18.1
 module load bison/3.4.1
 
 unset LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/cosma/local/Python/3.6.5/lib
 
-export VENV_NAME=firedrake  # Or whatever you named the venv
-#export DATA=$HOME/data
-export DATA=/cosma5/data/do008/dc-bett2
-export INSTALL_DIR=/tmp/firedrake
+export VENV_NAME=firedrake              # Or whatever you named the venv
+export DATA=/cosma5/data/do008/dc-bett2 # Path to data partition
+export INSTALL_DIR=/tmp/dc-bett2        # Path to firedrake install
 
 # Set main to be working directory
 # Create this in /tmp so we don't have issues with the lustre filesystem
