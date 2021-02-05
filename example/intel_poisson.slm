@@ -1,15 +1,30 @@
+# This will not run because MPI libraries are a problem.
+# Probably needs to rebuild Firedrake.
+
 #!/bin/bash
 #SBATCH -p bluefield1
 #SBATCH -A durham
 #SBATCH -J firedrake
 #SBATCH -N 1
 #SBATCH -t 0:10:00 # Overwrite last 3 using sbatch at submit time
+#SBATCH -e intel.err
+#SBATCH -o intel.out
 
 # Must pass in:
 # NODES - Number of nodes to use
 # SPACING - Stride between MPI ranks
 # RESULTS_DIR - Directory to save results to
 # SOLVER_PARAMS - Name of solver parameter dict (escaped in "")
+
+export NODES=2
+export SPACING=1
+export RESULTS_DIR="intel_results"
+export SOLVER_PARAMS="LU"
+
+module load vtune
+
+export MPS_STAT_LEVEL=2
+export APS_ARGS="-r aps_myprog"
 
 export DATA=/cosma5/data/durham/dc-ward1
 source $DATA/bin/firedrake_activate.sh
@@ -19,9 +34,9 @@ export CPU_PER_NODE=32
 export NCPU=$(python -c "print(int(${NODES}*${CPU_PER_NODE}/${SPACING}))")
 export NPERNODE=$(python -c "print(int(${CPU_PER_NODE}/${SPACING}))")
 export TSFACTOR=$(python -c "print(int(${NODES}))")
-export COMM="mpiexec -n ${NCPU} --ppn ${NPERNODE} $VIRTUAL_ENV/bin/python \
+export COMM="mpiexec -n ${NCPU} --ppn ${NPERNODE} aps $APS_ARGS $VIRTUAL_ENV/bin/python \
                 poisson_gmg.py --resultsdir ${RESULTS_DIR} \
-                    --baseN 12 --nref 3 --solver_params \"${SOLVER_PARAMS}\" \
+                    --baseN 8 --nref 3 --solver_params \"${SOLVER_PARAMS}\" \
                     --telescope_factor ${TSFACTOR} \
                     -log_view :${RESULTS_DIR}/${NCPU}_logview.py:ascii_info_detail"
 echo $COMM > ${RESULTS_DIR}/${NODES}_${NCPU}_srun.txt

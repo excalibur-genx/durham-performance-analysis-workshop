@@ -6,13 +6,17 @@ module load python/3.6.5
 module load gnu_comp/10.2.0
 module load cmake/3.18.1
 module load bison/3.4.1
+module load openmpi/4.0.5
 
 unset LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=/cosma/local/Python/3.6.5/lib
 
+# Remove this as it stops PyOP2 using MPI
+unset CC
+
 export VENV_NAME=firedrake              # Or whatever you named the venv
-export DATA=/cosma5/data/do008/dc-bett2 # Path to data partition
-export INSTALL_DIR=/tmp/dc-bett2        # Path to firedrake install
+export DATA=/cosma5/data/durham/$USER # Path to data partition
+export INSTALL_DIR=/tmp/$USER        # Path to firedrake install
 
 # Set main to be working directory
 # Create this in /tmp so we don't have issues with the lustre filesystem
@@ -22,7 +26,7 @@ cd $INSTALL_DIR
 # Set the PyOP2 compiler to ???
 # export PYOP2_BACKEND_COMPILER=$VIRTUAL_ENV/bin/mpicc
 
-tar -xzf $DATA/bin/$VENV_NAME.tar.gz -C $INSTALL_DIR
+tar -xzf $DATA/$VENV_NAME.tar.gz -C $INSTALL_DIR
 
 source $INSTALL_DIR/$VENV_NAME/bin/activate
 
