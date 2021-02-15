@@ -1,0 +1,12 @@
+546,550c546,550
+<     petsc_options.add("--download-pastix")
+<     # Required by pastix
+<     petsc_options.add("--download-hwloc")
+<     if osname == "Darwin":
+<         petsc_options.add("--download-hwloc-configure-arguments=--disable-opencl")
+---
+>     # ~ petsc_options.add("--download-pastix")
+>     # ~ # Required by pastix
+>     # ~ petsc_options.add("--download-hwloc")
+>     # ~ if osname == "Darwin":
+>         # ~ petsc_options.add("--download-hwloc-configure-arguments=--disable-opencl")

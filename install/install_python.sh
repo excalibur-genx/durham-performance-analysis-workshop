@@ -8,12 +8,8 @@ module load ucx/1.8.1
 
 # Installer variables
 export DATA=$HOME/data
-
-# Create bin folder and link helper scripts
-mkdir -p $DATA/bin
-ln -s $PWD/firedrake_activate.sh $DATA/bin/
-
 export TEMP_PATH=/tmp/firedrake
+mkdir -p $DATA/bin
 mkdir -p $TEMP_PATH
 cd $TEMP_PATH
 
@@ -31,10 +27,15 @@ git clone https://github.com/openssl/openssl.git
 cd openssl
 git checkout -b OpenSSL_1_1_1 tags/OpenSSL_1_1_1
 mkdir openssl
-./config --prefix=$TEMP_PATH/openssl/openssl
+
+SSL_LDFLAGS="$LDFLAGS -Wl,-rpath=$TEMP_PATH/openssl/openssl/lib -L$TEMP_PATH/openssl/openssl/lib"
+./config --prefix=$TEMP_PATH/openssl/openssl LDFLAGS="$SSL_LDFLAGS"
 make -j32
 make -j32 install
 cd ..
+rmdir /tmp/firedrake/openssl/openssl/ssl/certs/
+ln -s /etc/pki/tls/certs /tmp/firedrake/openssl/openssl/ssl/certs
+ln -s /etc/pki/tls/cert.pem /tmp/firedrake/openssl/openssl/ssl/
 
 # Python
 git clone https://github.com/python/cpython.git
@@ -44,6 +45,7 @@ git checkout -b v3.8.7 tags/v3.8.7
 
 PY_LDFLAGS="$LDFLAGS -Wl,-rpath=$TEMP_PATH/openssl/openssl/lib -L$TEMP_PATH/openssl/openssl/lib"
 PY_LDFLAGS="$PY_LDFLAGS -Wl,-rpath=$TEMP_PATH/libffi/libffi/lib64 -L$TEMP_PATH/libffi/libffi/lib64"
+PY_LDFLAGS="$PY_LDFLAGS -Wl,-rpath=$TEMP_PATH/py38/lib -L$TEMP_PATH/py38/lib"
 PY_CFLAGS="-I$TEMP_PATH/openssl/openssl/include -I$TEMP_PATH/libffi/libffi/include"
 PY_CPPFLAGS="-I$TEMP_PATH/openssl/openssl/include -I$TEMP_PATH/libffi/libffi/include"
 ./configure --prefix=$TEMP_PATH/py38 \
@@ -53,3 +55,6 @@ PY_CPPFLAGS="-I$TEMP_PATH/openssl/openssl/include -I$TEMP_PATH/libffi/libffi/inc
 make -j32
 make -j32 install
 cd ..
+
+# Tarball everything
+tar -czvf $DATA/bin/py38.tar.gz libffi openssl py38

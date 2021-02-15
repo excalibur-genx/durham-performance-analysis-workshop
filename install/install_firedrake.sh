@@ -1,42 +1,50 @@
 #!/bin/bash
 module purge
-module load python/3.6.5
 module load gnu_comp/10.2.0
 module load cmake/3.18.1
 module load bison/3.4.1
-
-# Otherwise we pick up the gcc 7.3.0 libraries
-unset LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/cosma/local/Python/3.6.5/lib
+module load openmpi/4.0.5
+module load ucx/1.8.1
 
 # Installer variables
+export SRC_DIR=$PWD
 export NEW_VENV_NAME=firedrake
-export DATA=$HOME/data
-export INSTALL_DIR=/tmp/$USER
+export DATA=/cosma5/data/do008/dc-bett2/
+export INSTALL_DIR=/tmp/firedrake
 
 # Create bin folder and link helper scripts
 mkdir -p $DATA/bin
-ln -s $PWD/firedrake_activate.sh $DATA/bin/
-ln -s $PWD/update_firedrake_cache.sh $DATA/bin/
-ln -s $PWD/update_firedrake_tarball.sh $DATA/bin/
+ln -s $SRC_DIR/firedrake_activate.sh $DATA/bin/
+ln -s $SRC_DIR/update_firedrake_cache.sh $DATA/bin/
+ln -s $SRC_DIR/update_firedrake_tarball.sh $DATA/bin/
 
 mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
+export MPICC=$MPIROOT/bin/mpicc
+export MPICXX=$MPIROOT/bin/mpicxx
+export MPIF90=$MPIROOT/bin/mpifort
+export MPIEXEC=$MPIROOT/bin/mpiexec
+
+# We're going to build our own Python (inside this tarball)
+tar -xzf $DATA/bin/py38.tar.gz
+
 export PETSC_CONFIGURE_OPTIONS="--with-x=0 --with-make-np=8 \
-    CC=$CC CXX=$CXX FC=$FC F77=$F77 F90=$F90 CPPFLAGS='$CPPFLAGS' \
     --COPTFLAGS='-O3 -march=native -mtune=native' \
     --CXXOPTFLAGS='-O3 -march=native -mtune=native' \
-    --FOPTFLAGS='-O3 -march=native -mtune=native' \
-    --LDFLAGS='$LDFLAGS'"
+    --FOPTFLAGS='-O3 -march=native -mtune=native'"
 
 curl -O https://raw.githubusercontent.com/firedrakeproject/firedrake/master/scripts/firedrake-install
+patch firedrake-install $SRC_DIR/no_pastix.patch
 
 # Install firedrake with the following options
-python3 firedrake-install \
+/tmp/firedrake/py38/bin/python3 firedrake-install \
+    --mpicc $MPICC \
+    --mpicxx $MPICXX \
+    --mpif90 $MPIF90 \
+    --mpiexec $MPIEXEC \
     --no-package-manager \
     --remove-build-files \
-    --pip-install $DATA/workspace/numpy/dist/numpy-1.19.5-cp36-cp36m-linux_x86_64.whl \
     --venv-name $NEW_VENV_NAME \
     --cache-dir $INSTALL_DIR/.cache_$NEW_VENV_NAME
 
