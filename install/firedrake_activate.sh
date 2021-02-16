@@ -21,9 +21,17 @@ cd $INSTALL_DIR
 tar -xzf $DATA/bin/py38.tar.gz
 tar -xzf $DATA/bin/$VENV_NAME.tar.gz -C $INSTALL_DIR
 tar -xzf $DATA/bin/cache_$VENV_NAME.tar.gz -C $INSTALL_DIR
-chmod -R g+w *
+chmod -R g+w,o+w .
 
 source $INSTALL_DIR/$VENV_NAME/bin/activate
+# $CC and $CXX interfere with PYOP2
+unset CC
+unset CXX
+export OMP_NUM_THREADS=1
+
+# Parameters to make OpenMPI work on DINE
+export OMPI_MCA_btl_tcp_if_include=p1p2
+export UCX_NET_DEVICES=mlx5_1:1
 
 # Return to original directory
 cd -
