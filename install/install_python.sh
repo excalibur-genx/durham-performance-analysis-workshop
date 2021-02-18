@@ -48,9 +48,10 @@ PY_LDFLAGS="$PY_LDFLAGS -Wl,-rpath=$TEMP_PATH/libffi/libffi/lib64 -L$TEMP_PATH/l
 PY_LDFLAGS="$PY_LDFLAGS -Wl,-rpath=$TEMP_PATH/py38/lib -L$TEMP_PATH/py38/lib"
 PY_CFLAGS="-I$TEMP_PATH/openssl/openssl/include -I$TEMP_PATH/libffi/libffi/include"
 PY_CPPFLAGS="-I$TEMP_PATH/openssl/openssl/include -I$TEMP_PATH/libffi/libffi/include"
+# Removed: --enable-profiling
 ./configure --prefix=$TEMP_PATH/py38 \
     --with-ensurepip --with-openssl=$TEMP_PATH/openssl \
-    --enable-shared --enable-profiling --enable-optimizations \
+    --enable-shared --enable-optimizations \
     LDFLAGS="$PY_LDFLAGS" CFLAGS="$PY_CFLAGS" CPPFLAGS="$PY_CPPFLAGS"
 make -j32
 make -j32 install

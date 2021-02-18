@@ -22,6 +22,9 @@ tar -xzf $DATA/bin/py38.tar.gz
 tar -xzf $DATA/bin/$VENV_NAME.tar.gz -C $INSTALL_DIR
 tar -xzf $DATA/bin/cache_$VENV_NAME.tar.gz -C $INSTALL_DIR
 chmod -R g+w,o+w .
+chmod g+s /tmp/firedrake/
+setfacl -d -m g::rwx /tmp/firedrake/
+setfacl -d -m o::rwx /tmp/firedrake/
 
 source $INSTALL_DIR/$VENV_NAME/bin/activate
 # $CC and $CXX interfere with PYOP2
