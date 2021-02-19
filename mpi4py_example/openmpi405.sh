@@ -1,6 +1,3 @@
-#!/bin/bash
-
-# LOAD MODULES
 module purge
 module load gnu_comp/10.2.0
 module load cmake/3.18.1
@@ -19,22 +16,9 @@ cd $INSTALL_DIR
 
 # Extract Firedrake and cache tarballs, make them world writable
 tar -xzf $DATA/bin/py38.tar.gz
-tar -xzf $DATA/bin/$VENV_NAME.tar.gz -C $INSTALL_DIR
-tar -xzf $DATA/bin/cache_$VENV_NAME.tar.gz -C $INSTALL_DIR
 chmod -R g+w,o+w .
-chmod g+s /tmp/firedrake/
-setfacl -d -m g::rwx /tmp/firedrake/
-setfacl -d -m o::rwx /tmp/firedrake/
-
-source $INSTALL_DIR/$VENV_NAME/bin/activate
-# $CC and $CXX interfere with PYOP2
-unset CC
-unset CXX
-export OMP_NUM_THREADS=1
-
-# Parameters to make OpenMPI work on DINE
-export OMPI_MCA_btl_tcp_if_include=p1p2
-export UCX_NET_DEVICES=mlx5_1:1
-
-# Return to original directory
 cd -
+
+source test/bin/activate
+
+mpiexec --mca btl_tcp_if_include p1p2 -n 2 $VIRTUAL_ENV/bin/python simple.py
