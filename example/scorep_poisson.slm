@@ -1,0 +1,44 @@
+#!/bin/bash
+#SBATCH -p bluefield1
+#SBATCH -A do008
+#SBATCH -J firedrake
+#SBATCH -N 1
+#SBATCH -t 0:20:00 # Overwrite last 3 using sbatch at submit time
+
+# Must pass in:
+# NODES - Number of nodes to use
+# SPACING - Stride between MPI ranks
+# RESULTS_DIR - Directory to save results to
+# SOLVER_PARAMS - Name of solver parameter dict (escaped in "")
+
+export DATA=/cosma5/data/do008/dc-bett2
+source $DATA/bin/firedrake_activate.sh
+srun -n ${NODES} --ntasks-per-node 1 $DATA/bin/firedrake_activate.sh
+
+# These are set in the activate script but somehow not exported
+export OMPI_MCA_btl_tcp_if_include=p1p2
+export UCX_NET_DEVICES=mlx5_1:1
+
+# Unpack ScoreP
+cd $INSTALL_DIR
+srun -n ${NODES} --ntasks-per-node 1 tar -xzf $DATA/bin/scorep.tar.gz
+PATH=$PATH:$INSTALL_DIR/scorep_build/bin
+cd -
+# 256MB
+export SCOREP_TOTAL_MEMORY=262144000
+export SCOREP_PROFILING_MAX_CALLPATH_DEPTH=30
+
+export CPU_PER_NODE=32
+export NCPU=$(python -c "print(int(${NODES}*${CPU_PER_NODE}/${SPACING}))")
+export NPERNODE=$(python -c "print(int(${CPU_PER_NODE}/${SPACING}))")
+export TSFACTOR=$(python -c "print(int(${NODES}))")
+export COMM="mpiexec -N ${NPERNODE} $VIRTUAL_ENV/bin/python -m scorep \
+                --mpp=mpi --instrumenter-type=cProfile \
+                    poisson_gmg.py --resultsdir ${RESULTS_DIR} \
+                        --baseN 12 --nref 3 --solver_params \"${SOLVER_PARAMS}\" \
+                        --telescope_factor ${TSFACTOR}"
+
+export SCOREP_EXPERIMENT_DIRECTORY="${RESULTS_DIR}/SCOREP_${NCPU}_profile"
+echo $COMM > ${RESULTS_DIR}/${NODES}_${NCPU}_srun.txt
+eval $COMM
+$DATA/bin/update_firedrake_cache.sh
