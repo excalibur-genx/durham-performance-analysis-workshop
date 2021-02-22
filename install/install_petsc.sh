@@ -38,10 +38,10 @@ export PETSC_OPTS="\
   --download-hypre \
   --download-netcdf \
   --download-ml \
+  --download-scalapack \
   --with-cxx-dialect=C++11 \
   --download-hdf5 \
-  --download-mumps \
-  --download-scalapack"
+  --download-mumps"
 
 if [ "$PETSC_ARCH" = "default" ]; then
   export PETSC_OPTS="$PETSC_OPTS \
