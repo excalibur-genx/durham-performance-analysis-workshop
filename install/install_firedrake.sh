@@ -8,9 +8,11 @@ module load ucx/1.8.1
 
 # Installer variables
 export SRC_DIR=$PWD
-export NEW_VENV_NAME=firedrake
-export DATA=/cosma5/data/do008/dc-bett2/
+export NEW_VENV_NAME=firedrake_nopetsc
+export DATA=/cosma5/data/durham/$USER
 export INSTALL_DIR=/tmp/firedrake
+export PETSC_DIR=$INSTALL_DIR/petsc_new
+export PETSC_ARCH=default  # { default, debug }
 
 # Create bin folder and link helper scripts
 mkdir -p $DATA/bin
@@ -29,13 +31,7 @@ export MPIEXEC=$MPIROOT/bin/mpiexec
 # We're going to build our own Python (inside this tarball)
 tar -xzf $DATA/bin/py38.tar.gz
 
-export PETSC_CONFIGURE_OPTIONS="--with-x=0 --with-make-np=8 \
-    --COPTFLAGS='-O3 -march=native -mtune=native' \
-    --CXXOPTFLAGS='-O3 -march=native -mtune=native' \
-    --FOPTFLAGS='-O3 -march=native -mtune=native'"
-
 curl -O https://raw.githubusercontent.com/firedrakeproject/firedrake/master/scripts/firedrake-install
-patch firedrake-install $SRC_DIR/no_pastix.patch
 
 # Install firedrake with the following options
 /tmp/firedrake/py38/bin/python3 firedrake-install \
@@ -46,7 +42,8 @@ patch firedrake-install $SRC_DIR/no_pastix.patch
     --no-package-manager \
     --remove-build-files \
     --venv-name $NEW_VENV_NAME \
-    --cache-dir $INSTALL_DIR/.cache_$NEW_VENV_NAME
+    --cache-dir $INSTALL_DIR/.cache_$NEW_VENV_NAME \
+    --honour-petsc-dir
 
 mkdir -p $INSTALL_DIR/.cache_$NEW_VENV_NAME
 touch $INSTALL_DIR/.cache_$NEW_VENV_NAME/foo

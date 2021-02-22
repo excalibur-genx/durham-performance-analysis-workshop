@@ -7,8 +7,10 @@ module load openmpi/4.0.5
 module load ucx/1.8.1
 
 # Installer variables
-export PETSC_ARCH=default  # { default, debug }
+export DATA=/cosma5/data/durham/$USER
 export INSTALL_DIR=/tmp/firedrake
+export PETSC_NAME=petsc_new
+export PETSC_ARCH=default  # { default, debug }
 
 export MPICC=$MPIROOT/bin/mpicc
 export MPICXX=$MPIROOT/bin/mpicxx
@@ -36,10 +38,10 @@ export PETSC_OPTS="\
   --download-hypre \
   --download-netcdf \
   --download-ml \
-  --download-scalapack \
   --with-cxx-dialect=C++11 \
   --download-hdf5 \
-  --download-mumps"
+  --download-mumps \
+  --download-scalapack"
 
 if [ "$PETSC_ARCH" = "default" ]; then
   export PETSC_OPTS="$PETSC_OPTS \
@@ -60,12 +62,20 @@ if [ ! -f "eigen-3.3.3.tgz" ]; then
 fi
 
 # Clone PETSc if needed
-if [ ! -d "petsc" ]; then
-  git clone -b release https://gitlab.com/petsc/petsc.git petsc
+if [ ! -d "$PETSC_NAME" ]; then
+  git clone -b release https://gitlab.com/petsc/petsc.git $PETSC_NAME
 fi
 
 # Do installation
-cd petsc
+cd $PETSC_NAME
 ./configure $PETSC_OPTS
 make all
 make check
+cd ..
+
+# Remove build artefacts and create tarball
+rm -rf $PETSC_DIR/$PETSC_ARCH/externalpackages
+rm -rf $PETSC_DIR/src/docs
+rm -rf $PETSC_DIR/src/**/{tests,tutorials}/output/*
+tar -czvf $DATA/bin/petsc.tar.gz petsc
+
