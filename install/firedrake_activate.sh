@@ -8,9 +8,11 @@ module load bison/3.4.1
 module load openmpi/4.0.5
 module load ucx/1.8.1
 
-export VENV_NAME=firedrake              # Or whatever you named the venv
-export DATA=/cosma5/data/do008/dc-bett2 # Path to data partition
+export VENV_NAME=firedrake_nopetsc              # Or whatever you named the venv
+export DATA=/cosma5/data/durham/dc-ward1 # Path to data partition
 export INSTALL_DIR=/tmp/firedrake       # Path to firedrake install
+export PETSC_DIR=$INSTALL_DIR/petsc_new
+export PETSC_ARCH=default
 
 # Set main to be working directory
 # Create this in /tmp so we don't have issues with the lustre filesystem
@@ -19,6 +21,7 @@ cd $INSTALL_DIR
 
 # Extract Firedrake and cache tarballs, make them world writable
 tar -xzf $DATA/bin/py38.tar.gz
+tar -xzf $DATA/bin/petsc.tar.gz
 tar -xzf $DATA/bin/$VENV_NAME.tar.gz -C $INSTALL_DIR
 tar -xzf $DATA/bin/cache_$VENV_NAME.tar.gz -C $INSTALL_DIR
 chmod -R g+w,o+w .
