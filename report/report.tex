@@ -1,0 +1,153 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage[cm]{fullpage}
+\usepackage{fancyhdr}
+\usepackage[ddmmyyyy]{datetime} 
+\usepackage[]{graphicx}
+\usepackage{hhline}
+\usepackage{listings}
+\usepackage{todonotes}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+
+% Settings for listings package
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{altblue}{rgb}{0.0,0.6,1.0}
+\definecolor{lstbg}{gray}{0.9}
+
+%[leftmargin=!,labelindent=0mm,labelwidth=0mm,labelsep=2mm,itemindent=0mm]
+\newlist{boxlist}{itemize}{1}
+\setlist[boxlist]{leftmargin=!,
+					labelindent=0mm,
+					labelwidth=0mm,
+					%labelsep=2mm,
+					itemindent=0mm}
+\setlist[boxlist,1]{label=\textbullet}
+
+\newenvironment{rbox}[1]{%
+	\centering
+	\tcolorbox[savedelimiter=rbox,
+				width=2\linewidth/3,
+				arc=3mm,
+				boxrule=0.8mm,
+				colframe=altblue!30,
+				coltitle=black,
+				colback=altblue!10,
+				coltext=black,
+				fonttitle=\large,
+				title={#1}]}
+	{\endtcolorbox}
+	
+\newenvironment{jacknotes}{\color{red}\renewcommand{\labelitemi}{$\star$}\begin{itemize}}{\end{itemize}}
+
+\author{Jack Betteridge}
+
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\setlength{\headsep}{5pt}
+\lhead{ \fancyplain{}{} }
+\rhead{ \fancyplain{}{} }
+%\lhead[\footnotesize\nouppercase{\leftmark}]{}
+%\rhead[]{\footnotesize\nouppercase{\rightmark}}
+
+\renewcommand{\footrulewidth}{0.4pt}
+\cfoot[-- \thepage\ --]{-- \thepage\ --}
+
+% Macros
+\newcommand{\RR}{\mathbb{R}}
+
+\begin{document}
+\begin{center}
+\textsc{\Large Firedrake}\\
+\textsc{2021 Code Performance Series: From analysis to insight}
+\end{center}
+
+Attended by:
+\begin{itemize}
+	\item Jack Betteridge
+	\item Josca Fregin
+	\item Reuben Nixon-Hill
+	\item Sophia Vorderwuelbecke
+	\item Connor Ward
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+\label{sec:overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{jacknotes}
+	\item Summarise what Firedrake is and how it works
+\end{jacknotes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Current methodology}
+\label{sec:current}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Aims}
+\label{sec:aims}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{jacknotes}
+	\item Scaling and performance of PyOP2
+	\item Scaling and performance of different solvers within PETSc
+\end{jacknotes}
+
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Session diary}
+\label{sec:diary}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{21/01/2021 - ARM and Intel performance tools}
+\label{ssec:arm_intel}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{jacknotes}
+	\item Preparations JB: installing Firedrake
+	\item Discuss Intel tool (and it not working \textbf{at all})
+	\item Allinear DDT not working at time
+\end{jacknotes}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{18/02/2021 - ScoreP}
+\label{ssec:scorep}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{jacknotes}
+	\item Preparations JB: installing Python CW: Installing PETSc
+	\item Discuss bug
+	\item Discuss Connor's new tool
+\end{jacknotes}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{11/03/2021 - Vampir}
+\label{ssec:vampir}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{jacknotes}
+	\item Preparations JB: installing ScoreP
+\end{jacknotes}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Selected Results}
+\label{sec:results}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions and Future work}
+\label{sec:conc}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{itemize}
+	\item 
+\end{itemize}
+
+\end{document}
