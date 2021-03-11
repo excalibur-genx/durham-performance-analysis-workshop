@@ -1,0 +1,12 @@
+SCOREP_REGION_NAMES_BEGIN
+  EXCLUDE
+    sre_parse*
+    sre_compile*
+    importlib*
+    zipfile*
+    pkg_resources*
+    pathlib*
+    enum*
+    matplotlib*
+    pyparsing*
+SCOREP_REGION_NAMES_END
