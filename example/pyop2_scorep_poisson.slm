@@ -28,6 +28,8 @@ cd -
 export SCOREP_TOTAL_MEMORY=262144000
 export SCOREP_PROFILING_MAX_CALLPATH_DEPTH=30
 export SCOREP_FILTERING_FILE="scorep.filter"
+export PYOP2_BACKEND_COMPILER="scorep-gcc"
+
 
 export CPU_PER_NODE=32
 export NCPU=$(python -c "print(int(${NODES}*${CPU_PER_NODE}/${SPACING}))")
