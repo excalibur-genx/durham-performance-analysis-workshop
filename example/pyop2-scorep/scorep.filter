@@ -1,12 +1,8 @@
 SCOREP_REGION_NAMES_BEGIN
   EXCLUDE
-    sre_parse*
-    sre_compile*
+    argparse*
     importlib*
-    zipfile*
-    pkg_resources*
-    pathlib*
-    enum*
     matplotlib*
-    pyparsing*
+    sympy*
+    ufl*
 SCOREP_REGION_NAMES_END

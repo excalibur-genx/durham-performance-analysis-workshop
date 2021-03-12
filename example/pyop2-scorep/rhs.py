@@ -4,7 +4,7 @@ from firedrake import *
 from firedrake.assemble import create_assembly_callable
 
 
-MESH_SIZE = 1000
+MESH_SIZE = 10
 N_REPEATS = 1000
 
 

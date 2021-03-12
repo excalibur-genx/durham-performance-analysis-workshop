@@ -1,6 +1,6 @@
 export DATA=/cosma5/data/durham/dc-ward1
 export INSTALL_DIR=/tmp/firedrake
-export VENV_NAME=firedrake
+export VENV_NAME=firedrake-connor  # for some reason the old Firedrake install does not pick up the correct call stack
 
 # Load modules
 module purge
@@ -16,9 +16,8 @@ export UCX_NET_DEVICES=mlx5_1:1
 
 # 256MB
 export SCOREP_TOTAL_MEMORY=262144000
-#export SCOREP_PROFILING_MAX_CALLPATH_DEPTH=45
-export SCOREP_PROFILING_MAX_CALLPATH_DEPTH=30
-export SCOREP_FILTERING_FILE="scorep.filter"
+export SCOREP_PROFILING_MAX_CALLPATH_DEPTH=65
+export SCOREP_FILTERING_FILE=$PWD/scorep.filter
 export SCOREP_EXPERIMENT_DIRECTORY="results"
 
 export PYOP2_BACKEND_COMPILER="scorep-gcc"
