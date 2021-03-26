@@ -13,7 +13,7 @@
 \usepackage{tcolorbox}
 \usepackage{cleveref}
 
-\graphicspath{{figures}}
+\graphicspath{{./figures/}}
 
 % Settings for listings package
 \definecolor{mygreen}{rgb}{0,0.6,0}
@@ -99,6 +99,7 @@
 	{\endtcolorbox}
 	
 \newenvironment{jacknotes}{\color{red}\renewcommand{\labelitemi}{$\star$}\begin{itemize}}{\end{itemize}}
+\newenvironment{connornotes}{\color{red}\renewcommand{\labelitemi}{$\star$}\begin{itemize}}{\end{itemize}}
 
 \author{Jack Betteridge}
 
@@ -142,6 +143,12 @@ Attended by:
 \emph{``Firedrake is an automated system for the solution of partial differential equations using the finite element method (FEM). Firedrake uses sophisticated code generation to provide mathematicians, scientists, and engineers with a very high productivity way to create sophisticated high performance simulations.''}
 \end{quote}
 
+\begin{itemize}
+    \item Mathematicians specify the variational problem in weak form using the expressive Unified Form Language (UFL).
+    \item Firedrake then uses the Two Stage Form Compiler (TSFC) to generate a highly optimised C kernel.
+    \item This local kernel is then assembled into a global matrix and vector by the parallel scheduling layer PyOP2.
+    \item The system is then solved by PETSc.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Case Study}
@@ -253,8 +260,11 @@ Alternatively an interactive flamegraph can be generated in a web browser using 
 	mpiexec -n 1 python -m cProfile my_firedrake_script.py : -n 7 python my_firedrake_script.py
 \end{lstlisting}
 
-Statistical Python profilers can also be used like \verb`pyinstrument` or \verb`pyspy` can be used as a less invasive alternative.
-\verb`pyspy` in particular is very useful as it allows not only the statistical profiling of Python calls, but also C kernels that Firedrake calls out too.
+Statistical Python profilers can also be used like \verb`pyinstrument` or \verb`py-spy` can be used as a less invasive alternative.
+\verb`py-spy` in particular is very useful as it allows not only the statistical profiling of Python calls, but also C kernels that Firedrake calls out too.
+\begin{lstlisting}[language=bash]
+    py-spy record --native --output profile.svg -- my_firedrake_script.py
+\end{lstlisting}
 
 PETSc is used extensively within Firedrake, by utilising the PETSc data structures for meshes, vectors and matrices it allows for the use of the extensive library of linear and non-linear solvers.
 For this reason, PETSc's internal instrumentation is often used for profiling and tracing.
@@ -299,6 +309,14 @@ The second developed by Jack Betteridge takes several Python formatted output fi
 	\item Scaling and performance of different solvers within PETSc (Jack)
 	\item Vectorisation experiments? (Sophia?)
 \end{jacknotes}
+
+\subsection{Scaling and Performance of PyOP2}
+
+\begin{connornotes}
+    \item What is PyOP2?
+    \item We have observed poor strong scaling performance, it could be due to either Python used as language or poor MPI design or other factor (e.g. caching)
+    \item Aim here is to check for MPI inefficiences and identify HPC-type bottlenecks
+\end{connornotes}
 
 
 \clearpage
