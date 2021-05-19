@@ -1,0 +1,179 @@
+\documentclass[pdf,aspectratio=169]{beamer}
+\newcommand{\theme}{define_theme}
+\usepackage{xifthen}
+\usepackage{listings}
+\usepackage[ruled]{algorithm2e}
+
+% Settings for listings package
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{altblue}{rgb}{0.0,0.6,1.0}
+\definecolor{lstbg}{gray}{0.9}
+
+\lstset{
+  backgroundcolor=\color{lstbg},
+  % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\tiny\ttfamily,
+  % the size of the fonts that are used for the code
+  breakatwhitespace=true,
+  % sets if automatic breaks should only happen at whitespace
+  breaklines=true,
+  % sets automatic line breaking
+  captionpos=b,
+  % sets the caption-position to bottom
+  commentstyle=\color{mygreen},
+  % comment style
+  deletekeywords={},
+  % if you want to delete keywords from the given language
+  escapeinside={\#*}{*},
+  % if you want to add LaTeX within your code
+  extendedchars=true,
+  % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,
+  % adds a frame around the code
+  keepspaces=true,
+  % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},
+  % keyword style
+  %language=c++,
+  % the language of the code
+  otherkeywords={},
+  % if you want to add more keywords to the set
+  numbers=left,
+  % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,
+  % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray},
+  % the style that is used for the line-numbers
+  rulecolor=\color{black},
+  % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,
+  % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,
+  % underline spaces within strings only
+  showtabs=false,
+  % show tabs within strings adding particular underscores
+  stepnumber=1,
+  % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},
+  % string literal style
+  tabsize=4,
+  % sets default tabsize to 4 spaces
+  title=\lstname
+  % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\graphicspath{{figures/}}
+
+\mode<presentation>{
+	%firedrake style only if enabled
+	\ifthenelse{\equal{\theme}{firedrake}}{
+		\usetheme{firedrake}
+		\usecolortheme{firedrake}
+	}{
+		\usetheme{CambridgeUS}
+		\usecolortheme{seagull}
+	}
+}
+
+% Awkward widebar thing... (instead of mathabx)
+\makeatletter
+\newcommand*\rel@kern[1]{\kern#1\dimexpr\macc@kerna}
+\newcommand*\widebar[1]{%
+  \begingroup
+  \def\mathaccent##1##2{%
+    \rel@kern{0.8}%
+    \overline{\rel@kern{-0.8}\macc@nucleus\rel@kern{0.2}}%
+    \rel@kern{-0.2}%
+  }%
+  \macc@depth\@ne
+  \let\math@bgroup\@empty \let\math@egroup\macc@set@skewchar
+  \mathsurround\z@ \frozen@everymath{\mathgroup\macc@group\relax}%
+  \macc@set@skewchar\relax
+  \let\mathaccentV\macc@nested@a
+  \macc@nested@a\relax111{#1}%
+  \endgroup
+}
+\makeatother
+
+% Some tikz magic
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+
+% Define how TiKZ will draw the nodes
+\tikzset{mathterm/.style={draw=none,fill=none,rectangle,inner sep=0pt,anchor=base}}
+\tikzstyle{every picture}+=[remember picture]
+\everymath{\displaystyle}
+
+\makeatletter
+
+% Designate a term in a math environment to point to
+% Syntax: \mathterm[node label]{some math}
+\newcommand\mathterm[2][]{%
+   \tikz [baseline] { \node [mathterm] (#1) {$#2$}; }}
+
+% A command to draw an arrow from the current position to a labelled math term
+% Default color=black, default arrow head=stealth
+% Syntax: \indicate[color]{term to point to}[path options]
+\newcommand\indicate[2][black]{%
+   \tikz [baseline] \node [inner sep=0pt,anchor=base] (i#2) {\vphantom|};
+   \@ifnextchar[{\@indicateopts{#1}{#2}}{\@indicatenoopts{#1}{#2}}}
+\def\@indicatenoopts#1#2{%
+   {\color{#1} \tikz[overlay] \path[line width=1pt,draw=#1,-stealth] (i#2) edge (#2);}}
+\def\@indicateopts#1#2[#3]{%
+   {\color{#1} \tikz[overlay] \path[line width=1pt,draw=#1,-stealth] (i#2) [#3] edge (#2);}}
+
+\makeatother
+
+\newcommand{\citehere}[1]{{\footnotesize[#1]}}
+
+\title[Firedrake]{Firedrake}
+\subtitle{2021 Code Performance Series}
+\author[JB,JF,RNH,SV,CW]{\textbf{Jack Betteridge} \and Joscha Fregin \and Reuben Nixon-Hill \and Sophia Vorderwuelbecke \and Connor Ward}
+\date[20/5/2021]{20${}^\text{th}$ May 2021}
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Overview}
+\begin{frame}{What is Firedrake?}
+\centering
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Profiling}
+\begin{frame}{Why is profiling difficult?}
+\centering
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+	\includegraphics[width=0.8\textwidth]{firedrake_diagram.pdf}
+\end{figure}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Commercial tools}
+\begin{frame}{}
+Intel VTune
+
+Allinear DDT
+\end{frame}
+
+\begin{frame}
+Score P
+\end{frame}
+
+\begin{frame}
+Flamegraph tool
+\end{frame}
+
+\begin{frame}
+Vampir
+
+Scalasca
+\end{frame}
+
+\end{document}
