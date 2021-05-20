@@ -222,7 +222,7 @@ mesh = UnitCubeMesh(N, N, N)
 hierarchy = MeshHierarchy(mesh, 1)
 mesh = hierarchy[-1]
 
-fs*degree = 3
+degree = 3
 V = FunctionSpace(mesh, "CG", degree)
 u = TrialFunction(V)
 v = TestFunction(V)
@@ -233,13 +233,13 @@ x, y, z = SpatialCoordinate(mesh)
 a = Constant(1)
 b = Constant(2)
 
-rhs*f = -pi**2 / 2
-rhs*f *= 2*cos(pi*x) - cos(pi*x/2)
-    rhs* - 2*(a**2 + b**2)*sin(pi*x)*tan(pi*x/4)
-rhs*f *= sin(a*pi*y)*sin(b*pi*z)
+f = -pi**2 / 2
+f *= 2*cos(pi*x) - cos(pi*x/2)
+     - 2*(a**2 + b**2)*sin(pi*x)*tan(pi*x/4)
+f *= sin(a*pi*y)*sin(b*pi*z)
 
 a = dot(grad(u), grad(v))*dx
-bilf*L = f*v*dx
+L = f*v*dx
 
 solver_parameters = {...}
 u = Function(V)
