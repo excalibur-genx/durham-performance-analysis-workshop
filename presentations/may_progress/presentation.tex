@@ -173,7 +173,7 @@
 
 \title[Firedrake]{Firedrake}
 \subtitle{2021 Code Performance Series}
-\author[JB,JF,RNH,SV,CW]{\textbf{Jack Betteridge} \and Joscha Fregin \and Reuben Nixon-Hill \and Sophia Vorderwuelbecke \and Connor Ward}
+\author[JB,JF,RNH,SV,CW]{\textbf{Jack Betteridge} \and Joscha Fregin \and Reuben Nixon-Hill \\ Sophia Vorderwuelbecke \and Connor Ward}
 \date[20/5/2021]{20${}^\text{th}$ May 2021}
 
 \begin{document}
@@ -204,7 +204,7 @@ Invocation:
 mpiexec -n 16 python poisson.py
 \end{lstlisting}
 
-Example code solving Poisson's equation
+Example code solving Poisson's equation\\
 Notice:
 \begin{itemize}
 	\item No compiling
@@ -267,7 +267,7 @@ python3: symbol lookup error: /cosma/local/intel/Parallel_Studio_XE_2019/vtune_a
 aps Error: Cannot run: python3 simple.py
 \end{lstlisting}
 
-Allinear DDT
+ARM MAP / Allinea DDT
 \begin{lstlisting}
 > perf-report \
     mpiexec -n 16 \
@@ -290,9 +290,7 @@ We like SCORE-P, it has Python bindings!
         --mpp=mpi --instrumenter-type=cProfile \
             poisson_gmg.py
 \end{lstlisting}
-We had to recompile SCORE-P from scratch too, but this issue has since been fixed!
-
-
+We had to recompile SCORE-P from scratch too, but this issue has since been fixed.
 \end{frame}
 
 \begin{frame}[fragile]
@@ -315,7 +313,7 @@ SCOREP_REGION_NAMES_BEGIN
     enum:*
 SCOREP_REGION_NAMES_END
 \end{lstlisting}
-
+\vspace{-2em}
 Careful balance to strike:
 \begin{itemize}
 	\item Call stack is deep
@@ -346,19 +344,22 @@ PETSc also displays profiling information for all of its calls, and raw informat
 \end{figure}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Vampir and Scalasca}
 \begin{itemize}
 	\item Vampir: looks good, but using it forwarded over ssh was a pain.
 	\item Proprietary nature of the tool means we are unlikely to use it.
-	\item Would be nice of cube had a tool for visualising traces (already available?)
+	\item Would be nice if Cube had a tool for visualising traces (already available?)
 	\item Haven't had much chance to play with Scalasca from the previous session.
 \end{itemize}
-
-
 \end{frame}
 
 \begin{frame}{Summary}
-	
+\begin{itemize}
+	\item Adding more profiling hooks to the Firedrake code base
+	\item Code generation (at least the way we do it) causes issues for many of the tools we've used
+	\item SCORE-P + Cube viewer were really useful once we got them working
+	\item Would be nice if profiling wasn't so oriented towards monolithic compiled executables (or at least considered other cases)
+\end{itemize}
 \end{frame}
 
 \end{document}
