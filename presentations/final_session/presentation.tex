@@ -122,8 +122,8 @@
 
 % Flow chart stuff
 \usetikzlibrary{shapes.geometric, arrows}
-\tikzstyle{expensivenode} = [rectangle, rounded corners, minimum width=5cm, minimum height=1cm,text centered, draw=black, fill=red!60]
-\tikzstyle{node} = [rectangle, rounded corners, minimum width=5cm, minimum height=1cm,text centered, draw=black, fill=blue!30]
+\tikzstyle{expensivenode} = [rectangle, rounded corners, minimum width=5cm, minimum height=0.6cm,text centered, draw=black, fill=red!60]
+\tikzstyle{node} = [rectangle, rounded corners, minimum width=5cm, minimum height=0.6cm,text centered, draw=black, fill=blue!30]
 \tikzstyle{empty} = [rectangle, minimum width=5cm, minimum height=1cm,text centered, draw=none, fill=none]
 \tikzstyle{arrow} = [thick,->,>=stealth]
 
@@ -184,55 +184,47 @@
 \date[16/07/2021]{16${}^\text{th}$ July 2021}
 
 \begin{document}
+
+\begin{frame}
+\includegraphics[width=0.1\textwidth]{firedrake}
 \maketitle
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Overview}
 
 \begin{frame}{What is Firedrake?}
-  \begin{center}
-    \textit{Firedrake is an automated system for the solution of partial differential equations using the finite element method (FEM).}\footnotemark
-    \footnotetext{\href{http://firedrakeproject.org/}{\texttt{firedrakeproject.org/}}}
-  \end{center}
-\end{frame}
 
-\begin{frame}{How does it work?}
+  \begin{center}
+    \textit{Firedrake is an automated system for the solution of partial differential equations using the finite element method (FEM).}
+  \end{center}
 
   \begin{center}
     \begin{tikzpicture}
       \node (start) [node] {\small User-provided mathematical form};
-      \node (codegen) [node, below of=start, yshift=-0.5cm] {\small Generate and compile a C kernel};
-      \node (assemble) [expensivenode, below of=codegen, yshift=-0.5cm] {\small Assemble linear system};
-      \node (solve) [expensivenode, below of=assemble, yshift=-0.5cm] {\small Solve system with PETSc};
+      \node (codegen) [node, below of=start, yshift=-0.1cm] {\small Generate and compile a C kernel};
+      \node (assemble) [expensivenode, below of=codegen, yshift=-0.1cm] {\small Assemble linear system};
+      \node (solve) [expensivenode, below of=assemble, yshift=-0.1cm] {\small Solve system with PETSc};
 
       \draw [arrow] (start) -- (codegen);
       \draw [arrow] (codegen) -- (assemble);
       \draw [arrow] (assemble) -- (solve);
 
-      \node (rstart) [empty, right of=start, xshift=6cm] {\lstinline{a = (inner(grad(u), grad(v)) + inner(u, v)) * dx}};
-      \node (rcodegen) [empty, right of=codegen, xshift=6cm] {\lstinline{static void form00_cell_integral_otherwise(...);}};
-      \node (rassemble) [empty, right of=assemble, xshift=6cm] {$Ax = b$};
+      \node (rstart) [empty, right of=start, xshift=5cm] {\lstinline{a = (inner(grad(u), grad(v)) + inner(u, v)) * dx}};
+      \node (rcodegen) [empty, right of=codegen, xshift=5cm] {\lstinline{static void form00_cell_integral_otherwise(...);}};
+      \node (rassemble) [empty, right of=assemble, xshift=5cm] {$Ax = b$};
     \end{tikzpicture}
   \end{center}
-
-\end{frame}
-
-\begin{frame}{How is it different to most HPC codes?}
-
-  \begin{itemize}
-    \item Written in Python - interpreted not compiled
-    \item Built on top of PETSc - black box
-  \end{itemize}
 
 \end{frame}
 
 \begin{frame}{Assumed performance characteristics}
 
   \begin{itemize}
-    \item Latencies due to Python and code generation
+    \item Latencies due to Python and code generation (amortized)
     \item Computations memory bound in the majority of cases
-    \item PETSc's MPI implementation is sound and ours is likely fine
+    \item MPI implementations for assembly and solve are good
   \end{itemize}
 
 \end{frame}
@@ -240,37 +232,21 @@
 \begin{frame}{Aims for the workshops}
 
   \begin{itemize}
-    \item Verify that our MPI implementations are sane
-    \item Study performance characteristics of the generated code (e.g. vectorisation potential, lifting work out of loops)
+    \item Study performance characteristics of the generated code and PETSc solvers
+    \item Verify that MPI implementations are efficient (assembly and solve)
+    \item Determine suitability of the tools for profiling Firedrake in the future
   \end{itemize}
 
 \end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsection{Profiling}
+\subsection{Problems}
 
-\begin{frame}[fragile]{Some initial scaling results}
-  \begin{columns}[T]
-    \begin{column}[T]{0.4\textwidth}
-      \includegraphics[width=\textwidth]{main_stage}
-    \end{column}
-    %
-    \begin{column}[T]{0.45\textwidth}
-      \small{Solver options:}
-      \includegraphics[width=\textwidth]{solver_opts}
-
-      \textit{\small Good PETSc scaling is achieved through using the right options - not low-level optimisations.}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}{Some hurdles}
+\begin{frame}{Hurdles to using the profiling tools}
   \begin{itemize}
-    \item Firedrake is interpreted not compiled
-    \item Took weeks to install properly...
-    \item Needed to compile our own Python (for Allinea DDT) and Score-P
-    \item MUST and Score-P incompatible with PETSc (since fixed)
+    \item Lots of things didn't work
+    \item Many of the profiling tools assume C/C++/Fortran
   \end{itemize}
 \end{frame}
 
@@ -279,14 +255,15 @@
   \begin{tabular}{l|c|c}
     \textbf{Tool} & \textbf{Did it work?} & \textbf{Did it generate any insights?} \\
     \hline
-    Intel VTune & No & N/A \\
-    Allinea DDT & Yes & Yes \\
-    Score-P & Yes & Yes \\
+    Intel VTune & No & No \\
+    MAQAO & No & No \\
+    MUST & Partially & No \\
+    Scalasca & Skipped & No \\
     Vampir & Yes & No \\
-    Scalasca & Skipped & N/A \\
-    MUST & Partially & N/A \\
-    MAQAO & No & N/A \\
-    Likwid & ? & ?
+    \hline
+    Allinea DDT & Yes & Some \\
+    Score-P & Yes & Yes \\
+    Likwid & Yes & Yes
   \end{tabular}
 \end{frame}
 
@@ -294,31 +271,34 @@
 
 \subsection{Insights}
 
-\begin{frame}{Allinea DDT}
-  \vspace{-1em}
+\begin{frame}{Score-P}
+  \begin{itemize}
+    \item Told us we have great load balancing
+    \item CUBE visualiser is very powerful
+    \item It has Python bindings
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Likwid}
   \begin{columns}[T]
-    \begin{column}[T]{0.45\textwidth}
+    \begin{column}{0.5\textwidth}
+      \vspace{-2em}
+
       \begin{figure}
-	\includegraphics[width=\textwidth]{ddt_32_circled}
+	\centering
+	\includegraphics[width=0.8\textwidth]{roofline}
+	\caption{Roofline plot for matrix-free assembly.}
       \end{figure}
     \end{column}
     %
-    \quad
-    \begin{column}[T]{0.45\textwidth}
-      \begin{figure}
-	\includegraphics[width=\textwidth]{ddt_128_circled}
-      \end{figure}
+    \begin{column}{0.35\textwidth}
+      \begin{itemize}
+	\item Easy to get working
+	\item Very powerful
+	\item Python bindings
+      \end{itemize}
     \end{column}
   \end{columns}
-\end{frame}
-
-\begin{frame}[fragile]{Score-P}
-  \begin{itemize}
-    \item Load balancing and parallel efficiency are apparently excellent
-    \item Great interface with tons of information
-    \item Has Python bindings!
-    \item Has a lot more to offer
-  \end{itemize}
 \end{frame}
 
 % --------------------------------------------------------------------------------
@@ -326,12 +306,20 @@
 \subsection{Conclusions}
 
 \begin{frame}{Takeaways}
+  \textbf{The bad:}
   \begin{itemize}
-    \item Initial performance assumptions were verified
-    \item Code generation (at least the way we do it) causes issues for many of the tools we've used
-    \item Sadly no performance gains made over course
-    \item SCORE-P was really useful - we should use it more
-    \item Lots of experience!
+    \item Sadly no performance gains made over the workshops
+    \item Python/code generation causes lots of issues
+    \item Did not investigate PETSc solvers as much as we would have liked
+  \end{itemize}
+  
+  \vspace{1em}
+
+  \textbf{The good:}
+  \begin{itemize}
+    \item Initial performance assumptions were largely verified
+    \item We really liked SCORE-P and Likwid (Python bindings!) - we will try to use them more
+    \item We learned a lot!
   \end{itemize}
 \end{frame}
 
@@ -351,6 +339,26 @@
     %
     \begin{column}[T]{0.45\textwidth}
       \includegraphics[width=0.8\textwidth]{firedrake}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Appendix}
+
+\begin{frame}{Appendix: Allinea DDT}
+  \vspace{-1em}
+  \begin{columns}[T]
+    \begin{column}[T]{0.45\textwidth}
+      \begin{figure}
+	\includegraphics[width=\textwidth]{ddt_32_circled}
+      \end{figure}
+    \end{column}
+    %
+    \quad
+    \begin{column}[T]{0.45\textwidth}
+      \begin{figure}
+	\includegraphics[width=\textwidth]{ddt_128_circled}
+      \end{figure}
     \end{column}
   \end{columns}
 \end{frame}
