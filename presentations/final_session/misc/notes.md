@@ -17,7 +17,7 @@
 
 ### Final remarks
 
-- It is written in Python.
+- It is written in Python rather than C/C++/Fortran. We generate our C code instead.
 - It only uses MPI for parallelism.
 
 ## Assumed performance characteristics
@@ -49,6 +49,10 @@
 - Information was at a very high level.
 - Told us that we are memory bound (for the problem at hand) and MPI efficiency seems good.
 
+### Vampir
+
+- We got some simple traces from it and managed to see the communication patterns but we found it quite difficult to use.
+
 ## Score-P
 
 ## Likwid
@@ -61,5 +65,9 @@
 - We are not memory bound here because we are doing matrix-free assembly.
 
 ## Takeaways
+
+### Initial performance assumptions verified
+
+- Performance is actually really pretty good
 
 ## Final slide
